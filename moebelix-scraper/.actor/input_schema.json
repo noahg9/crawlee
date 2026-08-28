@@ -1,0 +1,32 @@
+{
+    "title": "Möbelix Furniture Category Scraper input",
+    "type": "object",
+    "schemaVersion": 1,
+    "properties": {
+        "categoryUrl": {
+            "title": "Category URL",
+            "type": "string",
+            "description": "URL of the moebelix.cz furniture category to scrape, e.g. <code>https://www.moebelix.cz/zahradni-nabytek-C16</code>. A bare path or slug (<code>zahradni-nabytek-C16</code>) works too. Use a category listing page (URLs ending with <code>-C&lt;number&gt;</code>) — those list all products of the category including its subcategories.",
+            "editor": "textfield",
+            "prefill": "https://www.moebelix.cz/zahradni-nabytek-C16",
+            "default": "https://www.moebelix.cz/zahradni-nabytek-C16"
+        },
+        "maxItems": {
+            "title": "Maximum items",
+            "type": "integer",
+            "description": "Maximum number of products to scrape. Use 0 for no limit (the whole category).",
+            "minimum": 0,
+            "default": 0,
+            "prefill": 200
+        },
+        "proxyConfiguration": {
+            "title": "Proxy configuration",
+            "type": "object",
+            "description": "Proxy to use for scraping. Apify proxy is strongly recommended — the site is protected by Cloudflare. The proxy password is read from the <code>APIFY_PROXY_PASSWORD</code> environment variable, which the Apify platform injects automatically.",
+            "editor": "proxy",
+            "default": { "useApifyProxy": true },
+            "prefill": { "useApifyProxy": true }
+        }
+    },
+    "required": ["categoryUrl"]
+}

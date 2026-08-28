@@ -1,0 +1,41 @@
+{
+    "actorSpecification": 1,
+    "name": "moebelix-furniture-scraper",
+    "title": "Möbelix Furniture Category Scraper",
+    "description": "Scrapes furniture items from a chosen category on moebelix.cz",
+    "version": "1.0",
+    "buildTag": "latest",
+    "meta": {
+        "templateId": "js-crawlee-cheerio"
+    },
+    "input": "./input_schema.json",
+    "dockerfile": "../Dockerfile",
+    "storages": {
+        "dataset": {
+            "actorSpecification": 1,
+            "title": "Möbelix products",
+            "views": {
+                "products": {
+                    "title": "Products",
+                    "transformation": {
+                        "fields": ["name", "price", "oldPrice", "currency", "subtitle", "url", "imageUrl", "productId", "category"]
+                    },
+                    "display": {
+                        "component": "table",
+                        "properties": {
+                            "name": { "label": "Name", "format": "text" },
+                            "price": { "label": "Price", "format": "number" },
+                            "oldPrice": { "label": "Old price", "format": "number" },
+                            "currency": { "label": "Currency", "format": "text" },
+                            "subtitle": { "label": "Details", "format": "text" },
+                            "url": { "label": "URL", "format": "link" },
+                            "imageUrl": { "label": "Image", "format": "image" },
+                            "productId": { "label": "Product ID", "format": "text" },
+                            "category": { "label": "Category", "format": "text" }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
