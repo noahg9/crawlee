@@ -2,6 +2,8 @@ import type { Request as CrawleeRequest } from '@crawlee/core';
 import type { BaseHttpClient } from '@crawlee/http-client';
 import type { HttpRequestOptions, ISession, SendRequestOptions } from '@crawlee/types';
 
+import { storage } from '@apify/timeout';
+
 /**
  * Prepares a function to be used as the `sendRequest` context helper.
  *
@@ -32,11 +34,15 @@ export function createSendRequest(httpClient: BaseHttpClient, originRequest: Cra
             body: overrideRequest.body ?? baseRequest.body,
         } as RequestInit);
 
+        // Aborted when the enclosing timeout (e.g. the request handler's) fires
+        const cancelSignal = storage.getStore()?.cancelTask.signal;
+        const { signal } = overrideOptions;
+
         return httpClient.sendRequest(request, {
             session,
             cookieJar: overrideOptions?.cookieJar ?? session.cookieJar,
             timeoutMillis: overrideOptions.timeoutMillis,
-            signal: overrideOptions.signal,
+            signal: signal && cancelSignal ? AbortSignal.any([signal, cancelSignal]) : (signal ?? cancelSignal),
             ignoreTlsErrors: overrideOptions.ignoreTlsErrors,
         });
     };

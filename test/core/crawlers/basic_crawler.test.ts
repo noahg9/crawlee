@@ -2753,6 +2753,30 @@ describe('BasicCrawler', () => {
             expect(captured).toEqual([true]);
         });
 
+        test('aborts in-flight requests when the request handler times out', async () => {
+            const userController = new AbortController();
+            const signals: (AbortSignal | undefined)[] = [];
+
+            const crawler = new BasicCrawler({
+                requestHandlerTimeoutSecs: 0.1,
+                maxRequestRetries: 0,
+                httpClient: Object.assign(Object.create(BaseHttpClient.prototype) as BaseHttpClient, {
+                    async sendRequest(_request: globalThis.Request, options?: { signal?: AbortSignal }) {
+                        signals.push(options?.signal);
+                        return new Promise<Response>(() => {});
+                    },
+                }),
+                async requestHandler({ sendRequest }) {
+                    await Promise.all([sendRequest(), sendRequest({}, { signal: userController.signal })]);
+                },
+            });
+
+            await crawler.run([url]);
+
+            expect(signals.map((signal) => signal?.aborted)).toEqual([true, true]);
+            expect(userController.signal.aborted).toBe(false);
+        });
+
         test('proxyUrl TypeScript support', async () => {
             const crawler = new BasicCrawler({
                 async requestHandler({ sendRequest }) {
